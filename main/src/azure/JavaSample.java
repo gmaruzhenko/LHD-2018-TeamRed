@@ -39,7 +39,7 @@ public class JavaSample
             StringEntity reqEntity = new StringEntity("{body}");
             request.setEntity(reqEntity);
 
-            HttpResponse response = httpclient.execute(request);         
+            HttpResponse response = httpclient.execute(request);
             HttpEntity entity = response.getEntity();
 
             if (entity != null)
