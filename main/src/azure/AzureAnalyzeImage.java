@@ -4,6 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
 import javax.imageio.ImageIO;
 import javax.net.ssl.HttpsURLConnection;
@@ -14,6 +22,29 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+//import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class AzureAnalyzeImage {
 
@@ -35,6 +66,7 @@ public class AzureAnalyzeImage {
      * @return a JSON string (URLS) output
      * @throws Exception
      */
+    /*
     private static String azureSndRcv(String input) throws Exception {
         //String text = new Gson().toJson(textCollection);
         byte[] encoded_text = text.getBytes("UTF-8");
@@ -63,60 +95,35 @@ public class AzureAnalyzeImage {
 
         return "no implement";
     }
+    */
 
-    /**
-     * Package JSON data received from Azure Cognitive Services into a
-     * more usable list
+    /** Send an image to Azure Cognitive Services for processing
      *
-     * @param json_text obtained from Azure Cognitive Services as a request
-     *                  response
-     * @return a list of SentimentResponses after parsing the JSON data
+     * @param imageUrl
+     * @return output from analysis
      */
-    private static List<SentimentResponse> getSentiments(String json_text) {
-        JsonParser parser = new JsonParser();
-        JsonObject json = parser.parse(json_text).getAsJsonObject();
-        List<SentimentResponse> responses = new LinkedList<>();
-        Type collectionType = new TypeToken<List<SentimentResponse>>() {
-        }.getType();
-        responses = (new Gson()).fromJson(json.get("documents"), collectionType);
-        return responses;
-    }
 
-    /**
-     * Primary interface method for processing a sentiment analysis request
-     *
-     * @param textCollection is not null
-     * @return the sentiment scores obtained from Azure Cognitive Services
-     */
-    public static List<SentimentResponse> getSentiments(TextCollection textCollection) {
-        List<SentimentResponse> scores = new LinkedList<>();
-        try {
-            scores = azureSndRcv(textCollection);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        return scores;
-    }
-    private Gson AnalyzeImage(String imageUrl) {
+    public JSONObject AnalyzeImage(String imageUrl) {
         try (CloseableHttpClient httpclient = HttpClientBuilder.create().build())
         {
-            // Create the URI to access the REST API call for Analyze Image.
-            String uriString = uriBasePreRegion +
-                    String.valueOf(subscriptionRegionComboBox.getSelectedItem()) +
-                    uriBasePostRegion + uriBaseAnalyze;
-            URIBuilder builder = new URIBuilder(uriString);
+            // Create the URI to access the REST API call to read text in an image.
+            String uriString = host + path;
+            URIBuilder uriBuilder = new URIBuilder(uriString);
 
             // Request parameters. All of them are optional.
-            builder.setParameter("visualFeatures", "Categories,Description,Color,Adult");
-            builder.setParameter("language", "en");
+            uriBuilder.setParameter("visualFeatures", "Categories,Description,Color,Adult");
+            uriBuilder.setParameter("language", "en");
+
+            // Request parameters.
+            uriBuilder.setParameter("handwriting", "true");
 
             // Prepare the URI for the REST API call.
-            URI uri = builder.build();
+            URI uri = uriBuilder.build();
             HttpPost request = new HttpPost(uri);
 
             // Request headers.
             request.setHeader("Content-Type", "application/json");
-            request.setHeader("Ocp-Apim-Subscription-Key", subscriptionKeyTextField.getText());
+            request.setHeader("Ocp-Apim-Subscription-Key", accessKey);
 
             // Request body.
             StringEntity reqEntity = new StringEntity("{\"url\":\"" + imageUrl + "\"}");
@@ -132,6 +139,7 @@ public class AzureAnalyzeImage {
                 // Return the JSONObject.
                 String jsonString = EntityUtils.toString(entity);
                 return new JSONObject(jsonString);
+
             } else {
                 // No response. Return null.
                 return null;
