@@ -14,4 +14,5 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
      implementation 'com.google.code.gson:gson:2.8.5'
+    compile 'org.apache.httpcomponents:httpclient:4.5.6'
 }
