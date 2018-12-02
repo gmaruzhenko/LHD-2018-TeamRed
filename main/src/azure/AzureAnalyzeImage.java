@@ -1,6 +1,9 @@
 
 package azure;
-
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -48,6 +51,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.util.regex.Matcher;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AzureAnalyzeImage {
 
@@ -70,12 +76,16 @@ public class AzureAnalyzeImage {
      * @throws Exception
      */
 
-    public static Gson azureSndRcv(String input) throws Exception {
+    public static String analyzeImage(String input) throws Exception {
 
 
+        /*
         String input1 = "{\"url\":\"http://1.bp.blogspot.com/_if-mbCZlM78/SrHkHQfA86I/AAAAAAAAAY4/maWcEeYFHkM/s400/the_nebelung_breeders.jpg\"\n" +
                 "}";
-        byte[] encoded_text = input1.getBytes("UTF-8");
+           */
+
+        String inputformatted = "{\"url\":\""+input+"\"\n" + "}";
+        byte[] encoded_text = inputformatted.getBytes("UTF-8");
 
         URL url = new URL(host + path);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -101,14 +111,9 @@ public class AzureAnalyzeImage {
             response.append(line);
         }
         in.close();
-        System.out.println(response);
-
-        Gson output = new Gson();
-       // output.fromJson(response);
-
-        return output;
+        return response.toString();
     }
 
-    
+
 
 }
