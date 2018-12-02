@@ -1,3 +1,4 @@
+
 package azure;
 
 import com.google.gson.Gson;
@@ -156,4 +157,5 @@ public class AzureAnalyzeImage {
             return null;
         }
     }
+
 }
