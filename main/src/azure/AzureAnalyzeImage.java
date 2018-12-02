@@ -66,10 +66,10 @@ public class AzureAnalyzeImage {
      * @return a JSON string (URLS) output
      * @throws Exception
      */
-    /*
-    private static String azureSndRcv(String input) throws Exception {
+
+    public static Gson azureSndRcv(String input) throws Exception {
         //String text = new Gson().toJson(textCollection);
-        byte[] encoded_text = text.getBytes("UTF-8");
+        //byte[] encoded_text = input.getBytes("UTF-8");
 
         URL url = new URL(host + path);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -78,8 +78,10 @@ public class AzureAnalyzeImage {
         connection.setRequestProperty("Ocp-Apim-Subscription-Key", accessKey);
         connection.setDoOutput(true);
 
+
         DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-        wr.write(encoded_text, 0, encoded_text.length);
+        wr.writeUTF(input);
+        //wr.write(encoded_text, 0, encoded_text.length);
 
         wr.flush();
         wr.close();
@@ -92,10 +94,12 @@ public class AzureAnalyzeImage {
             response.append(line);
         }
         in.close();
+        Gson output = new Gson();
+       // output.fromJson(response);
 
-        return "no implement";
+        return output;
     }
-    */
+
 
     /** Send an image to Azure Cognitive Services for processing
      *

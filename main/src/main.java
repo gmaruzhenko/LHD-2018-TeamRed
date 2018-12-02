@@ -7,12 +7,12 @@ public class main {
 
     //temp driver
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         String urlinput = "https://17d0a3abnz42sjqxm3ewa9u1-wpengine.netdna-ssl.com/wp-content/uploads/2015/07/Whiteboard-Lead.jpg";
         AzureAnalyzeImage driver = new AzureAnalyzeImage();
-        JSONObject test =  driver.AnalyzeImage(urlinput);
-        
+        Gson test =  driver.azureSndRcv(urlinput);
+
         System.out.println(test);
 
 
