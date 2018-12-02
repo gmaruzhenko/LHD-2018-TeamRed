@@ -19,7 +19,9 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,7 +51,7 @@ import org.json.JSONObject;
 public class AzureAnalyzeImage {
 
     private static String host = "https://westus.api.cognitive.microsoft.com";
-    private static String path = "/vision/v1.0/analyze";
+    private static String path = "/vision/v1.0/analyze?visualFeatures=Categories&language=en";
     private static String accessKey = "96e7756c7e1741ec9c516810a191ee89";
 
     /**
@@ -68,20 +70,24 @@ public class AzureAnalyzeImage {
      */
 
     public static Gson azureSndRcv(String input) throws Exception {
-        //String text = new Gson().toJson(textCollection);
-        //byte[] encoded_text = input.getBytes("UTF-8");
+
+
+        String input1 = "{\"url\":\"http://1.bp.blogspot.com/_if-mbCZlM78/SrHkHQfA86I/AAAAAAAAAY4/maWcEeYFHkM/s400/the_nebelung_breeders.jpg\"\n" +
+                "}";
+        byte[] encoded_text = input1.getBytes("UTF-8");
 
         URL url = new URL(host + path);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+
         connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "text/json");
+        connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Ocp-Apim-Subscription-Key", accessKey);
+        connection.setRequestProperty("Content-Length", String.valueOf(encoded_text.length));
         connection.setDoOutput(true);
 
+        OutputStream wr = connection.getOutputStream();
 
-        DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-        wr.writeUTF(input);
-        //wr.write(encoded_text, 0, encoded_text.length);
+        wr.write(encoded_text, 0, encoded_text.length);
 
         wr.flush();
         wr.close();
@@ -94,10 +100,31 @@ public class AzureAnalyzeImage {
             response.append(line);
         }
         in.close();
+        System.out.println(response);
+
         Gson output = new Gson();
        // output.fromJson(response);
 
         return output;
+    }
+    public static void try2 (String input) throws Exception {
+        String urlParameters = input;
+        byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
+        int postDataLength = postData.length;
+        String request = "http://example.com/index.php";
+        URL url = new URL(request);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setDoOutput(true);
+        conn.setInstanceFollowRedirects(false);
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setRequestProperty("charset", "utf-8");
+        conn.setRequestProperty("Content-Length", Integer.toString(postDataLength));
+        conn.setUseCaches(false);
+
+        try (DataOutputStream wr = new DataOutputStream(conn.getOutputStream())) {
+            wr.write(postData);
+        }
     }
 
 
